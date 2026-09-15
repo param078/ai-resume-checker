@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - AI Resume Checker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- Dashboard Navbar -->
+
+    <header class="navbar">
+
+       <a href="index.html" class="logo">
+    AI Resume Checker
+</a>
+
+        <nav>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Analyses
+            </a>
+
+            <a href="#">
+                Profile
+            </a>
+
+            <button
+                class="login-btn"
+                id="logoutBtn">
+
+                Logout
+
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Dashboard -->
+
+    <main class="dashboard">
+
+        <!-- Analysis Loading Overlay -->
+
+<div
+    class="loading-overlay"
+    id="loadingOverlay">
+
+    <div class="loading-card">
+
+        <div class="loading-spinner"></div>
+
+        <h2>
+            Analyzing Candidates
+        </h2>
+
+        <p>
+            AI is reviewing resumes and matching
+            candidates with the job requirements...
+        </p>
+
+    </div>
+
+</div>
+
+        <section class="dashboard-header">
+
+            <div>
+
+                <span class="badge">
+                    Recruiter Dashboard
+                </span>
+
+                <h1>
+                    Welcome,
+                    <span id="userName">
+                        Recruiter
+                    </span>
+                </h1>
+
+                <p>
+                    Analyze resumes against a job description
+                    and find the best candidates faster.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- New Screening -->
+
+        <section class="screening-card">
+
+            <h2>
+                Start New Screening
+            </h2>
+
+            <p>
+                Add a job description and upload candidate resumes.
+            </p>
+
+
+            <!-- Job Description -->
+
+            <div class="form-group">
+
+                <label for="jobDescription">
+                    Job Description
+                </label>
+
+                <textarea
+                    id="jobDescription"
+                    placeholder="Paste the job description here..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- Resume Upload -->
+
+            <div class="form-group">
+
+                <label for="resumeFiles">
+                    Candidate Resumes
+                </label>
+
+
+                <div class="upload-box">
+
+                    <div class="upload-icon">
+                        ↑
+                    </div>
+
+                    <h3>
+                        Upload Candidate Resumes
+                    </h3>
+
+                    <p>
+                        Choose multiple PDF or DOCX resumes
+                    </p>
+
+
+                    <label
+                        for="resumeFiles"
+                        class="upload-btn">
+
+                        Choose Files
+
+                    </label>
+
+
+                    <input
+                        type="file"
+                        id="resumeFiles"
+                        accept=".pdf,.docx"
+                        multiple
+                        hidden>
+
+                </div>
+
+
+                <!-- Selected Files -->
+
+                <div
+                    id="selectedFiles"
+                    class="selected-files">
+                </div>
+
+            </div>
+
+
+            <!-- Analyze Button -->
+
+            <button
+                class="primary-btn analyze-btn"
+                id="analyzeBtn">
+
+                Analyze Candidates →
+
+            </button>
+
+        </section>
+
+
+        <!-- Recent Analyses -->
+
+        <section class="recent-section">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Recent Analyses
+                    </h2>
+
+                    <p>
+                        Your latest candidate screening results.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="analysis-list"
+                id="analysisList">
+
+                <div class="analysis-placeholder">
+
+                    <h3>
+                        No analyses yet
+                    </h3>
+
+                    <p>
+                        Start your first candidate screening
+                        to see results here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

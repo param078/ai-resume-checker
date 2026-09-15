@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Screening Results - AI Resume Checker</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- Navbar -->
+
+    <header class="navbar">
+
+        <div class="logo">
+            AI Resume Checker
+        </div>
+
+        <nav>
+
+            <a href="dashboard.html">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Analyses
+            </a>
+
+            <a href="#">
+                Profile
+            </a>
+
+            <button
+                class="login-btn"
+                id="logoutBtn">
+                Logout
+            </button>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Results -->
+
+    <main class="results-page">
+
+        <!-- Results Header -->
+
+        <section class="results-header">
+
+            <div>
+
+                <span class="badge">
+                    ✦ AI Screening Results
+                </span>
+
+                <h1>
+                    Candidate Ranking
+                </h1>
+
+                <p>
+                    Candidates ranked according to their
+                    match with the job requirements.
+                </p>
+
+            </div>
+
+
+            <button
+                class="secondary-btn"
+                onclick="window.location.href='dashboard.html'">
+
+                ← New Screening
+
+            </button>
+
+        </section>
+
+
+        <!-- Candidate Ranking -->
+
+        <section
+            class="candidate-list"
+            id="candidateList">
+
+            <!-- Candidates will be inserted by JavaScript -->
+
+        </section>
+
+
+        <!-- Selected Candidate Analysis -->
+
+        <section
+            class="candidate-analysis"
+            id="candidateAnalysis">
+
+            <div class="analysis-title">
+
+                <div>
+
+                    <span class="badge">
+                        Selected Candidate
+                    </span>
+
+                    <h2 id="selectedCandidate">
+                        Candidate
+                    </h2>
+
+                </div>
+
+
+                <div class="large-score">
+
+                    <span id="overallScore">
+                        0%
+                    </span>
+
+                    <small>
+                        Overall Match
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- Analysis Grid -->
+
+            <div class="analysis-grid">
+
+
+                <!-- Matched Skills -->
+
+                <div class="analysis-box">
+
+                    <h3>
+                        Matched Skills
+                    </h3>
+
+                    <ul id="matchedSkills">
+                    </ul>
+
+                </div>
+
+
+                <!-- Missing Skills -->
+
+                <div class="analysis-box">
+
+                    <h3>
+                        Missing Skills
+                    </h3>
+
+                    <ul id="missingSkills">
+                    </ul>
+
+                </div>
+
+
+                <!-- Strengths -->
+
+                <div class="analysis-box">
+
+                    <h3>
+                        Strengths
+                    </h3>
+
+                    <ul id="strengths">
+                    </ul>
+
+                </div>
+
+
+                <!-- Weaknesses -->
+
+                <div class="analysis-box">
+
+                    <h3>
+                        Weaknesses
+                    </h3>
+
+                    <ul id="weaknesses">
+                    </ul>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI Suggestions -->
+
+            <div class="suggestions-box">
+
+                <h3>
+                    AI Suggestions
+                </h3>
+
+                <ul id="suggestions">
+                </ul>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
