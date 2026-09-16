@@ -1,618 +1,323 @@
-const API_URL = "http://127.0.0.1:8000";
-
+const API_URL = "https://ai-resume-checker-n3o1.onrender.com";
 
 // ==================== SIGNUP ====================
 
-const signupForm =
-    document.getElementById("signupForm");
+const signupForm = document.getElementById("signupForm");
 
 if (signupForm) {
+  signupForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    signupForm.addEventListener(
-        "submit",
-        async function (event) {
+    const name = document.getElementById("signupName").value;
 
-            event.preventDefault();
+    const email = document.getElementById("signupEmail").value;
 
-            const name =
-                document.getElementById("signupName").value;
+    const password = document.getElementById("signupPassword").value;
 
-            const email =
-                document.getElementById("signupEmail").value;
+    const signupButton = signupForm.querySelector("button");
 
-            const password =
-                document.getElementById("signupPassword").value;
+    try {
+      signupButton.disabled = true;
+      signupButton.textContent = "Creating Account...";
 
-            const signupButton =
-                signupForm.querySelector("button");
+      const response = await fetch(`${API_URL}/signup`, {
+        method: "POST",
 
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-            try {
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          password: password,
+        }),
+      });
 
-                signupButton.disabled = true;
-                signupButton.textContent =
-                    "Creating Account...";
+      const data = await response.json();
 
+      if (data.message && data.message.toLowerCase().includes("already")) {
+        showNotification(
+          "Account Already Exists",
+          "This email is already registered. Please login.",
+          "error",
+        );
 
-                const response =
-                    await fetch(
-                        `${API_URL}/signup`,
-                        {
-                            method: "POST",
+        return;
+      }
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+      if (response.ok && data.user_id) {
+        showNotification(
+          "Account Created",
+          "Your account was created successfully.",
+          "success",
+        );
 
-                            body: JSON.stringify({
-                                name: name,
-                                email: email,
-                                password: password
-                            })
-                        }
-                    );
+        setTimeout(function () {
+          window.location.href = "login.html";
+        }, 1200);
 
+        return;
+      }
 
-                const data =
-                    await response.json();
+      showNotification(
+        "Signup Failed",
+        data.message || "Something went wrong.",
+        "error",
+      );
+    } catch (error) {
+      console.error("Signup error:", error);
 
+      showNotification(
+        "Signup Failed",
+        error.message || "Unable to create account.",
+        "error",
+      );
+    } finally {
+      signupButton.disabled = false;
 
-                if (
-                    data.message &&
-                    data.message
-                        .toLowerCase()
-                        .includes("already")
-                ) {
-
-                    showNotification(
-                        "Account Already Exists",
-                        "This email is already registered. Please login.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-
-                if (
-                    response.ok &&
-                    data.user_id
-                ) {
-
-                    showNotification(
-                        "Account Created",
-                        "Your account was created successfully.",
-                        "success"
-                    );
-
-
-                    setTimeout(function () {
-
-                        window.location.href =
-                            "login.html";
-
-                    }, 1200);
-
-
-                    return;
-                }
-
-
-                showNotification(
-                    "Signup Failed",
-                    data.message ||
-                    "Something went wrong.",
-                    "error"
-                );
-
-
-            } catch (error) {
-
-                console.error(
-                    "Signup error:",
-                    error
-                );
-
-
-                showNotification(
-                    "Signup Failed",
-                    error.message ||
-                    "Unable to create account.",
-                    "error"
-                );
-
-
-            } finally {
-
-                signupButton.disabled =
-                    false;
-
-                signupButton.textContent =
-                    "Create Account";
-
-            }
-
-        }
-    );
-
+      signupButton.textContent = "Create Account";
+    }
+  });
 }
-
-
 
 // ==================== LOGIN ====================
 
-const loginForm =
-    document.getElementById("loginForm");
+const loginForm = document.getElementById("loginForm");
 
 if (loginForm) {
+  loginForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
+    const email = document.getElementById("loginEmail").value;
 
-            event.preventDefault();
+    const password = document.getElementById("loginPassword").value;
 
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
 
-            const email =
-                document.getElementById("loginEmail").value;
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-            const password =
-                document.getElementById("loginPassword").value;
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
+      const data = await response.json();
 
-            try {
+      if (response.ok && data.access_token) {
+        localStorage.setItem("access_token", data.access_token);
 
-                const response =
-                    await fetch(
-                        `${API_URL}/login`,
-                        {
-                            method: "POST",
+        window.location.href = "dashboard.html";
+      } else {
+        showNotification(
+          "Login Failed",
+          data.message || "Invalid email or password.",
+          "error",
+        );
+      }
+    } catch (error) {
+      console.error("Login error:", error);
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                email: email,
-                                password: password
-                            })
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-                if (
-                    response.ok &&
-                    data.access_token
-                ) {
-
-                    localStorage.setItem(
-                        "access_token",
-                        data.access_token
-                    );
-
-
-                    window.location.href =
-                        "dashboard.html";
-
-
-                } else {
-
-                    showNotification(
-                        "Login Failed",
-                        data.message ||
-                        "Invalid email or password.",
-                        "error"
-                    );
-
-                }
-
-
-            } catch (error) {
-
-                console.error(
-                    "Login error:",
-                    error
-                );
-
-
-                showNotification(
-                    "Login Failed",
-                    "Unable to connect to the server.",
-                    "error"
-                );
-
-            }
-
-        }
-    );
-
+      showNotification(
+        "Login Failed",
+        "Unable to connect to the server.",
+        "error",
+      );
+    }
+  });
 }
-
-
 
 // ==================== DASHBOARD PROTECTION ====================
 
-const isDashboard =
-    window.location.pathname
-        .endsWith("dashboard.html");
-
+const isDashboard = window.location.pathname.endsWith("dashboard.html");
 
 if (isDashboard) {
+  const token = localStorage.getItem("access_token");
 
-    const token =
-        localStorage.getItem("access_token");
-
-
-    if (!token) {
-
-        window.location.href =
-            "login.html";
-
-    }
-
+  if (!token) {
+    window.location.href = "login.html";
+  }
 }
-
-
 
 // ==================== USER PROFILE ====================
 
-const dashboardUserName =
-    document.getElementById("userName");
-
+const dashboardUserName = document.getElementById("userName");
 
 if (dashboardUserName) {
+  const token = localStorage.getItem("access_token");
 
-    const token =
-        localStorage.getItem("access_token");
+  if (token) {
+    fetch(`${API_URL}/profile`, {
+      method: "GET",
 
-
-    if (token) {
-
-        fetch(
-            `${API_URL}/profile`,
-            {
-                method: "GET",
-
-                headers: {
-                    "Authorization":
-                        `Bearer ${token}`
-                }
-            }
-        )
-        .then(
-            response =>
-                response.json()
-        )
-        .then(
-            data => {
-
-                if (data.name) {
-
-                    dashboardUserName.textContent =
-                        data.name;
-
-                }
-
-            }
-        )
-        .catch(
-            error => {
-
-                console.error(
-                    "Profile error:",
-                    error
-                );
-
-            }
-        );
-
-    }
-
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.name) {
+          dashboardUserName.textContent = data.name;
+        }
+      })
+      .catch((error) => {
+        console.error("Profile error:", error);
+      });
+  }
 }
-
-
 
 // ==================== LOGOUT ====================
 
-const logoutBtn =
-    document.getElementById("logoutBtn");
-
+const logoutBtn = document.getElementById("logoutBtn");
 
 if (logoutBtn) {
+  logoutBtn.addEventListener("click", function () {
+    localStorage.removeItem("access_token");
 
-    logoutBtn.addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem(
-                "access_token"
-            );
-
-
-            window.location.href =
-                "login.html";
-
-        }
-    );
-
+    window.location.href = "login.html";
+  });
 }
-
-
 
 // ==================== ANALYZE RESUMES ====================
 
-const analyzeBtn =
-    document.getElementById("analyzeBtn");
-
+const analyzeBtn = document.getElementById("analyzeBtn");
 
 if (analyzeBtn) {
+  const loadingOverlay = document.getElementById("loadingOverlay");
 
-    const loadingOverlay =
-        document.getElementById(
-            "loadingOverlay"
-        );
+  analyzeBtn.addEventListener("click", async function () {
+    const jobDescription = document.getElementById("jobDescription").value;
 
+    const resumeFiles = document.getElementById("resumeFiles").files;
 
-    analyzeBtn.addEventListener(
-        "click",
-        async function () {
+    // Job description validation
 
-            const jobDescription =
-                document
-                    .getElementById(
-                        "jobDescription"
-                    )
-                    .value;
+    if (!jobDescription.trim()) {
+      showNotification(
+        "Job Description Required",
+        "Please enter a job description.",
+        "error",
+      );
 
+      return;
+    }
 
-            const resumeFiles =
-                document
-                    .getElementById(
-                        "resumeFiles"
-                    )
-                    .files;
+    // Resume validation
 
+    if (resumeFiles.length === 0) {
+      showNotification(
+        "Resume Required",
+        "Please upload at least one resume.",
+        "error",
+      );
 
+      return;
+    }
 
-            // Job description validation
+    // Authentication
 
-            if (!jobDescription.trim()) {
+    const token = localStorage.getItem("access_token");
 
-                showNotification(
-                    "Job Description Required",
-                    "Please enter a job description.",
-                    "error"
-                );
+    if (!token) {
+      window.location.href = "login.html";
 
-                return;
-            }
+      return;
+    }
 
+    // FormData
 
+    const formData = new FormData();
 
-            // Resume validation
+    formData.append("job_description", jobDescription);
 
-            if (
-                resumeFiles.length === 0
-            ) {
+    for (const file of resumeFiles) {
+      formData.append("files", file);
+    }
 
-                showNotification(
-                    "Resume Required",
-                    "Please upload at least one resume.",
-                    "error"
-                );
+    try {
+      analyzeBtn.textContent = "Analyzing Candidates...";
 
-                return;
-            }
+      analyzeBtn.disabled = true;
 
+      loadingOverlay.style.display = "flex";
 
+      const response = await fetch(`${API_URL}/analyze-resume`, {
+        method: "POST",
 
-            // Authentication
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
 
-            const token =
-                localStorage.getItem(
-                    "access_token"
-                );
+        body: formData,
+      });
 
+      const data = await response.json();
 
-            if (!token) {
+      if (!response.ok) {
+        throw new Error(data.detail || "Analysis failed.");
+      }
 
-                window.location.href =
-                    "login.html";
+      // Save results
 
-                return;
-            }
+      sessionStorage.setItem("analysis_results", JSON.stringify(data));
 
+      // Open results
 
+      window.location.href = "results.html";
+    } catch (error) {
+      loadingOverlay.style.display = "none";
 
-            // FormData
+      console.error("Analysis error:", error);
 
-            const formData =
-                new FormData();
+      showNotification(
+        "Analysis Failed",
+        error.message || "Something went wrong while analyzing the resumes.",
+        "error",
+      );
+    } finally {
+      loadingOverlay.style.display = "none";
 
+      analyzeBtn.textContent = "Analyze Candidates →";
 
-            formData.append(
-                "job_description",
-                jobDescription
-            );
-
-
-            for (
-                const file of resumeFiles
-            ) {
-
-                formData.append(
-                    "files",
-                    file
-                );
-
-            }
-
-
-
-            try {
-
-                analyzeBtn.textContent =
-                    "Analyzing Candidates...";
-
-
-                analyzeBtn.disabled =
-                    true;
-
-
-                loadingOverlay.style.display =
-                    "flex";
-
-
-
-                const response =
-                    await fetch(
-                        `${API_URL}/analyze-resume`,
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Authorization":
-                                    `Bearer ${token}`
-                            },
-
-                            body: formData
-                        }
-                    );
-
-
-                const data =
-                    await response.json();
-
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        data.detail ||
-                        "Analysis failed."
-                    );
-
-                }
-
-
-
-                // Save results
-
-                sessionStorage.setItem(
-                    "analysis_results",
-                    JSON.stringify(data)
-                );
-
-
-
-                // Open results
-
-                window.location.href =
-                    "results.html";
-
-
-            } catch (error) {
-
-                loadingOverlay.style.display =
-                    "none";
-
-
-                console.error(
-                    "Analysis error:",
-                    error
-                );
-
-
-                showNotification(
-                    "Analysis Failed",
-                    error.message ||
-                    "Something went wrong while analyzing the resumes.",
-                    "error"
-                );
-
-
-            } finally {
-
-                loadingOverlay.style.display =
-                    "none";
-
-
-                analyzeBtn.textContent =
-                    "Analyze Candidates →";
-
-
-                analyzeBtn.disabled =
-                    false;
-
-            }
-
-        }
-    );
-
+      analyzeBtn.disabled = false;
+    }
+  });
 }
 
 
 
 // ==================== RESULTS PAGE ====================
 
-const candidateList =
-    document.getElementById(
-        "candidateList"
-    );
-
+const candidateList = document.getElementById("candidateList");
 
 if (candidateList) {
+  const storedResults = sessionStorage.getItem("analysis_results");
 
-    const storedResults =
-        sessionStorage.getItem(
-            "analysis_results"
-        );
-
-
-    if (!storedResults) {
-
-        candidateList.innerHTML = `
+  if (!storedResults) {
+    candidateList.innerHTML = `
             <div class="analysis-placeholder">
                 <h3>No analysis found</h3>
                 <p>Please start a new screening.</p>
             </div>
         `;
+  } else {
+    const data = JSON.parse(storedResults);
 
+    const results = data.results;
 
-    } else {
+    results.forEach(function (candidate) {
+      const candidateCard = document.createElement("div");
 
-        const data =
-            JSON.parse(storedResults);
+      candidateCard.className = "candidate-result";
 
+      candidateCard.style.cursor = "pointer";
 
-        const results =
-            data.results;
-
-
-        results.forEach(
-            function (candidate) {
-
-                const candidateCard =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                candidateCard.className =
-                    "candidate-result";
-
-
-                candidateCard.style.cursor =
-                    "pointer";
-
-
-                candidateCard.innerHTML = `
+      candidateCard.innerHTML = `
                     <div class="rank">
                         #${candidate.rank}
                     </div>
@@ -629,11 +334,8 @@ if (candidateList) {
 
                         <div class="result-skills">
                             ${candidate.analysis.matched_skills
-                                .map(
-                                    skill =>
-                                        `<span>${skill}</span>`
-                                )
-                                .join("")}
+                              .map((skill) => `<span>${skill}</span>`)
+                              .join("")}
                         </div>
 
                     </div>
@@ -644,361 +346,145 @@ if (candidateList) {
                     </div>
                 `;
 
+      candidateCard.addEventListener("click", function () {
+        showCandidateAnalysis(candidate);
 
-                candidateCard.addEventListener(
-                    "click",
-                    function () {
+        document.getElementById("candidateAnalysis").scrollIntoView({
+          behavior: "smooth",
+        });
+      });
 
-                        showCandidateAnalysis(
-                            candidate
-                        );
-
-
-                        document
-                            .getElementById(
-                                "candidateAnalysis"
-                            )
-                            .scrollIntoView({
-                                behavior: "smooth"
-                            });
-
-                    }
-                );
-
-
-                candidateList.appendChild(
-                    candidateCard
-                );
-
-            }
-        );
-
-    }
-
+      candidateList.appendChild(candidateCard);
+    });
+  }
 }
-
-
 
 // ==================== INITIAL SELECTED CANDIDATE ====================
 
-const candidateAnalysis =
-    document.getElementById(
-        "candidateAnalysis"
-    );
-
+const candidateAnalysis = document.getElementById("candidateAnalysis");
 
 if (candidateAnalysis) {
+  const storedResults = sessionStorage.getItem("analysis_results");
 
-    const storedResults =
-        sessionStorage.getItem(
-            "analysis_results"
-        );
+  if (storedResults) {
+    const data = JSON.parse(storedResults);
 
+    const results = data.results;
 
-    if (storedResults) {
-
-        const data =
-            JSON.parse(storedResults);
-
-
-        const results =
-            data.results;
-
-
-        if (results.length > 0) {
-
-            showCandidateAnalysis(
-                results[0]
-            );
-
-        }
-
+    if (results.length > 0) {
+      showCandidateAnalysis(results[0]);
     }
-
+  }
 }
-
-
 
 // ==================== SHOW CANDIDATE ANALYSIS ====================
 
-function showCandidateAnalysis(
-    candidate
-) {
+function showCandidateAnalysis(candidate) {
+  document.getElementById("selectedCandidate").textContent = candidate.filename;
 
-    document
-        .getElementById(
-            "selectedCandidate"
-        )
-        .textContent =
-            candidate.filename;
+  document.getElementById("overallScore").textContent =
+    `${candidate.overall_score}%`;
 
+  const matchedSkills = document.getElementById("matchedSkills");
 
-    document
-        .getElementById(
-            "overallScore"
-        )
-        .textContent =
-            `${candidate.overall_score}%`;
+  matchedSkills.innerHTML = "";
 
+  candidate.analysis.matched_skills.forEach(function (skill) {
+    const li = document.createElement("li");
 
+    li.textContent = skill;
 
-    const matchedSkills =
-        document.getElementById(
-            "matchedSkills"
-        );
+    matchedSkills.appendChild(li);
+  });
 
+  const missingSkills = document.getElementById("missingSkills");
 
-    matchedSkills.innerHTML = "";
+  missingSkills.innerHTML = "";
 
+  candidate.analysis.missing_skills.forEach(function (skill) {
+    const li = document.createElement("li");
 
-    candidate.analysis
-        .matched_skills
-        .forEach(
-            function (skill) {
+    li.textContent = skill;
 
-                const li =
-                    document.createElement(
-                        "li"
-                    );
+    missingSkills.appendChild(li);
+  });
 
+  const strengths = document.getElementById("strengths");
 
-                li.textContent =
-                    skill;
+  strengths.innerHTML = "";
 
+  candidate.analysis.strengths.forEach(function (strength) {
+    const li = document.createElement("li");
 
-                matchedSkills.appendChild(
-                    li
-                );
+    li.textContent = strength;
 
-            }
-        );
+    strengths.appendChild(li);
+  });
 
+  const weaknesses = document.getElementById("weaknesses");
 
+  weaknesses.innerHTML = "";
 
-    const missingSkills =
-        document.getElementById(
-            "missingSkills"
-        );
+  candidate.analysis.weaknesses.forEach(function (weakness) {
+    const li = document.createElement("li");
 
+    li.textContent = weakness;
 
-    missingSkills.innerHTML = "";
+    weaknesses.appendChild(li);
+  });
 
+  const suggestions = document.getElementById("suggestions");
 
-    candidate.analysis
-        .missing_skills
-        .forEach(
-            function (skill) {
+  suggestions.innerHTML = "";
 
-                const li =
-                    document.createElement(
-                        "li"
-                    );
+  candidate.analysis.suggestions.forEach(function (suggestion) {
+    const li = document.createElement("li");
 
+    li.textContent = suggestion;
 
-                li.textContent =
-                    skill;
-
-
-                missingSkills.appendChild(
-                    li
-                );
-
-            }
-        );
-
-
-
-    const strengths =
-        document.getElementById(
-            "strengths"
-        );
-
-
-    strengths.innerHTML = "";
-
-
-    candidate.analysis
-        .strengths
-        .forEach(
-            function (strength) {
-
-                const li =
-                    document.createElement(
-                        "li"
-                    );
-
-
-                li.textContent =
-                    strength;
-
-
-                strengths.appendChild(
-                    li
-                );
-
-            }
-        );
-
-
-
-    const weaknesses =
-        document.getElementById(
-            "weaknesses"
-        );
-
-
-    weaknesses.innerHTML = "";
-
-
-    candidate.analysis
-        .weaknesses
-        .forEach(
-            function (weakness) {
-
-                const li =
-                    document.createElement(
-                        "li"
-                    );
-
-
-                li.textContent =
-                    weakness;
-
-
-                weaknesses.appendChild(
-                    li
-                );
-
-            }
-        );
-
-
-
-    const suggestions =
-        document.getElementById(
-            "suggestions"
-        );
-
-
-    suggestions.innerHTML = "";
-
-
-    candidate.analysis
-        .suggestions
-        .forEach(
-            function (suggestion) {
-
-                const li =
-                    document.createElement(
-                        "li"
-                    );
-
-
-                li.textContent =
-                    suggestion;
-
-
-                suggestions.appendChild(
-                    li
-                );
-
-            }
-        );
-
+    suggestions.appendChild(li);
+  });
 }
-
-
 
 // ==================== RECENT ANALYSES ====================
 
-const analysisList =
-    document.getElementById(
-        "analysisList"
-    );
-
+const analysisList = document.getElementById("analysisList");
 
 if (analysisList) {
+  const token = localStorage.getItem("access_token");
 
-    const token =
-        localStorage.getItem(
-            "access_token"
-        );
+  if (token) {
+    fetch(`${API_URL}/analyses`, {
+      method: "GET",
 
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const analyses = data.analyses || [];
 
-    if (token) {
+        if (analyses.length === 0) {
+          return;
+        }
 
-        fetch(
-            `${API_URL}/analyses`,
-            {
-                method: "GET",
+        analyses.sort(function (a, b) {
+          return b._id.localeCompare(a._id);
+        });
 
-                headers: {
-                    "Authorization":
-                        `Bearer ${token}`
-                }
-            }
-        )
-        .then(
-            response =>
-                response.json()
-        )
-        .then(
-            data => {
+        const latestAnalyses = analyses.slice(0, 5);
 
-                const analyses =
-                    data.analyses || [];
+        analysisList.innerHTML = "";
 
+        latestAnalyses.forEach(function (analysis) {
+          const card = document.createElement("div");
 
-                if (
-                    analyses.length === 0
-                ) {
+          card.className = "recent-analysis-card";
 
-                    return;
+          card.style.cursor = "pointer";
 
-                }
-
-
-                analyses.sort(
-                    function (a, b) {
-
-                        return b._id
-                            .localeCompare(
-                                a._id
-                            );
-
-                    }
-                );
-
-
-                const latestAnalyses =
-                    analyses.slice(
-                        0,
-                        5
-                    );
-
-
-                analysisList.innerHTML =
-                    "";
-
-
-                latestAnalyses.forEach(
-                    function (analysis) {
-
-                        const card =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        card.className =
-                            "recent-analysis-card";
-
-
-                        card.style.cursor =
-                            "pointer";
-
-
-                        card.innerHTML = `
+          card.innerHTML = `
                             <div class="recent-analysis-info">
 
                                 <h3>
@@ -1017,235 +503,94 @@ if (analysisList) {
                             </div>
                         `;
 
+          card.addEventListener("click", function () {
+            sessionStorage.setItem("selected_analysis_id", analysis._id);
 
-                        card.addEventListener(
-                            "click",
-                            function () {
+            window.location.href = "results.html";
+          });
 
-                                sessionStorage.setItem(
-                                    "selected_analysis_id",
-                                    analysis._id
-                                );
-
-
-                                window.location.href =
-                                    "results.html";
-
-                            }
-                        );
-
-
-                        analysisList.appendChild(
-                            card
-                        );
-
-                    }
-                );
-
-            }
-        )
-        .catch(
-            error => {
-
-                console.error(
-                    "Analyses error:",
-                    error
-                );
-
-            }
-        );
-
-    }
-
+          analysisList.appendChild(card);
+        });
+      })
+      .catch((error) => {
+        console.error("Analyses error:", error);
+      });
+  }
 }
-
-
 
 // ==================== SELECTED RESUME FILES ====================
 
-const resumeFilesInput =
-    document.getElementById(
-        "resumeFiles"
-    );
+const resumeFilesInput = document.getElementById("resumeFiles");
 
+const selectedFilesContainer = document.getElementById("selectedFiles");
 
-const selectedFilesContainer =
-    document.getElementById(
-        "selectedFiles"
-    );
+if (resumeFilesInput && selectedFilesContainer) {
+  resumeFilesInput.addEventListener("change", function () {
+    selectedFilesContainer.innerHTML = "";
 
+    const files = resumeFilesInput.files;
 
-if (
-    resumeFilesInput &&
-    selectedFilesContainer
-) {
+    for (const file of files) {
+      const fileItem = document.createElement("div");
 
-    resumeFilesInput.addEventListener(
-        "change",
-        function () {
+      fileItem.className = "selected-file";
 
-            selectedFilesContainer.innerHTML =
-                "";
-
-
-            const files =
-                resumeFilesInput.files;
-
-
-            for (
-                const file of files
-            ) {
-
-                const fileItem =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                fileItem.className =
-                    "selected-file";
-
-
-                fileItem.innerHTML = `
+      fileItem.innerHTML = `
                     <span>📄</span>
                     <span>${file.name}</span>
                 `;
 
-
-                selectedFilesContainer.appendChild(
-                    fileItem
-                );
-
-            }
-
-        }
-    );
-
+      selectedFilesContainer.appendChild(fileItem);
+    }
+  });
 }
-
-
 
 // ==================== NAVBAR SCROLL EFFECT ====================
 
-const navbar =
-    document.querySelector(
-        ".navbar"
-    );
-
+const navbar = document.querySelector(".navbar");
 
 if (navbar) {
-
-    window.addEventListener(
-        "scroll",
-        function () {
-
-            if (
-                window.scrollY > 20
-            ) {
-
-                navbar.classList.add(
-                    "scrolled"
-                );
-
-            } else {
-
-                navbar.classList.remove(
-                    "scrolled"
-                );
-
-            }
-
-        }
-    );
-
+  window.addEventListener("scroll", function () {
+    if (window.scrollY > 20) {
+      navbar.classList.add("scrolled");
+    } else {
+      navbar.classList.remove("scrolled");
+    }
+  });
 }
-
-
 
 // ==================== NOTIFICATION ====================
 
-function showNotification(
-    title,
-    message,
-    type = "success"
-) {
+function showNotification(title, message, type = "success") {
+  const notification = document.getElementById("notification");
 
-    const notification =
-        document.getElementById(
-            "notification"
-        );
+  const notificationIcon = document.getElementById("notificationIcon");
 
+  const notificationTitle = document.getElementById("notificationTitle");
 
-    const notificationIcon =
-        document.getElementById(
-            "notificationIcon"
-        );
+  const notificationMessage = document.getElementById("notificationMessage");
 
+  if (!notification) {
+    return;
+  }
 
-    const notificationTitle =
-        document.getElementById(
-            "notificationTitle"
-        );
+  notificationTitle.textContent = title;
 
+  notificationMessage.textContent = message;
 
-    const notificationMessage =
-        document.getElementById(
-            "notificationMessage"
-        );
+  notification.classList.remove("error");
 
+  if (type === "error") {
+    notification.classList.add("error");
 
-    if (!notification) {
+    notificationIcon.textContent = "×";
+  } else {
+    notificationIcon.textContent = "✓";
+  }
 
-        return;
+  notification.classList.add("show");
 
-    }
-
-
-    notificationTitle.textContent =
-        title;
-
-
-    notificationMessage.textContent =
-        message;
-
-
-    notification.classList.remove(
-        "error"
-    );
-
-
-    if (type === "error") {
-
-        notification.classList.add(
-            "error"
-        );
-
-
-        notificationIcon.textContent =
-            "×";
-
-    } else {
-
-        notificationIcon.textContent =
-            "✓";
-
-    }
-
-
-    notification.classList.add(
-        "show"
-    );
-
-
-    setTimeout(
-        function () {
-
-            notification.classList.remove(
-                "show"
-            );
-
-        },
-        3500
-    );
-
+  setTimeout(function () {
+    notification.classList.remove("show");
+  }, 3500);
 }
