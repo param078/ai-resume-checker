@@ -213,5 +213,5 @@ Developer / Creator
 
 ## Live Demo
 
-- **Live Demo:** https://ai-resume-checker-lac.vercel.app/
-- **GitHub Repository:** https://github.com/param078/ai-resume-checker
+- **[Live Demo](https://ai-resume-checker-lac.vercel.app/)**
+- **[GitHub Repository](https://github.com/param078/ai-resume-checker)**
